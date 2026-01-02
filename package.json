@@ -1,0 +1,22 @@
+{
+  "name": "ai-health-analyzer",
+  "version": "1.0.0",
+  "description": "AI-powered health report analyzer with MERN stack",
+  "main": "server/dist/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm run dev",
+    "server:build": "cd server && npm run build",
+    "client:build": "cd client && npm run build",
+    "build": "npm run server:build && npm run client:build",
+    "start": "cd server && npm start",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install"
+  },
+  "keywords": ["health", "ai", "analyzer", "mern", "react", "express", "mongodb"],
+  "author": "AI Health Analyzer Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
