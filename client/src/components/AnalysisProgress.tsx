@@ -74,8 +74,6 @@ const AnalysisProgress: React.FC<AnalysisProgressProps> = ({
           const Icon = stageInfo.icon;
           const isActive = index === currentStageIndex;
           const isCompleted = index < currentStageIndex;
-          const isPending = index > currentStageIndex;
-
           return (
             <div 
               key={stageInfo.key}

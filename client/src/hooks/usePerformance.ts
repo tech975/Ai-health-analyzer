@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { measurePerformance, trackMemoryUsage } from '../utils/performance';
+import { trackMemoryUsage } from '../utils/performance';
 
 // Hook for measuring component render performance
 export const useRenderPerformance = (componentName: string) => {

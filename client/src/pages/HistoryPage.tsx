@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { reportApi } from '../services/api';
-import { Report, ReportFilters, PaginatedResponse } from '../types';
+import { Report, ReportFilters } from '../types';
 import ReportList from '../components/ReportList';
 import SearchFilter from '../components/SearchFilter';
 import BulkActions from '../components/BulkActions';
@@ -138,7 +138,7 @@ const HistoryPage = () => {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked && reports) {
-      setSelectedReports(reports.map(report => report._id));
+      setSelectedReports(reports.map(report => report._id).filter((id): id is string => id !== undefined));
     } else {
       setSelectedReports([]);
     }

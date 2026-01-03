@@ -25,7 +25,7 @@ export const trackWebVitals = () => {
   if ('PerformanceObserver' in window) {
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      entries.forEach((entry) => {
+      entries.forEach((entry: any) => {
         if (entry.entryType === 'first-input') {
           console.log('FID:', entry.processingStart - entry.startTime);
         }
@@ -72,7 +72,7 @@ export const trackMemoryUsage = () => {
 
 // Bundle size analyzer (development only)
 export const analyzeBundleSize = () => {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log('Bundle analysis available in build stats');
   }
 };

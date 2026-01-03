@@ -89,6 +89,12 @@ const fileInfoSchema = new Schema({
 }, { _id: false });
 
 const analysisSchema = new Schema<AIAnalysisResult>({
+  patientDetails: {
+    name: { type: String, trim: true },
+    age: { type: String, trim: true },
+    gender: { type: String, trim: true },
+    phoneNumber: { type: String, trim: true }
+  },
   summary: {
     type: String,
     required: true,
@@ -155,6 +161,25 @@ const reportSchema = new Schema<IReport>({
   }
 }, {
   timestamps: true
+});
+
+// Transform _id to id for frontend compatibility
+reportSchema.set('toJSON', {
+  transform: function(doc: any, ret: any) {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+    return ret;
+  }
+});
+
+reportSchema.set('toObject', {
+  transform: function(doc: any, ret: any) {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+    return ret;
+  }
 });
 
 // Indexes for performance optimization

@@ -70,8 +70,8 @@ const HomePage = () => {
         // Success feedback
         showSuccess('Health report analyzed successfully!');
         
-        // Navigate to report page using the correct reportId from the response
-        navigate(`/report/${analyzedReport.reportId}`);
+        // Navigate to report page using the correct id from the response
+        navigate(`/report/${analyzedReport.id || analyzedReport._id}`);
       });
     } catch (err: any) {
       console.error('Error processing report:', err);

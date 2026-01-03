@@ -1,5 +1,3 @@
-import { AxiosError } from 'axios';
-
 export interface TimeoutError {
   isTimeout: boolean;
   message: string;

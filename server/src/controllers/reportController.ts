@@ -172,6 +172,7 @@ export const analyzeReport = async (req: AuthRequest, res: Response) => {
       return res.status(201).json(
         createSuccessResponse({
           reportId: report._id,
+          id: report._id, // Add explicit id field
           analysis,
           status: 'completed',
           patientInfo,
@@ -264,11 +265,14 @@ export const getReport = async (req: AuthRequest, res: Response) => {
       );
     }
 
+    // Convert to JSON to ensure _id is transformed to id
+    const reportData = report.toJSON();
+
     // Cache the report for 10 minutes
-    cacheService.set(cacheKey, report, 600000);
+    cacheService.set(cacheKey, reportData, 600000);
 
     return res.status(200).json(
-      createSuccessResponse(report, 'Report retrieved successfully')
+      createSuccessResponse(reportData, 'Report retrieved successfully')
     );
 
   } catch (error) {
@@ -379,17 +383,20 @@ export const getUserReports = async (req: AuthRequest, res: Response) => {
     const totalPages = Math.ceil(total / limitNum);
 
     const result = {
-      reports: reports.map(report => ({
-        id: report._id,
-        patientInfo: report.patientInfo,
-        fileInfo: {
-          originalName: report.fileInfo.originalName,
-          size: report.fileInfo.fileSize
-        },
-        status: report.status,
-        createdAt: report.createdAt,
-        updatedAt: report.updatedAt
-      })),
+      reports: reports.map(report => {
+        const reportData = report.toJSON ? report.toJSON() : report;
+        return {
+          id: reportData.id || reportData._id,
+          patientInfo: reportData.patientInfo,
+          fileInfo: {
+            originalName: reportData.fileInfo.originalName,
+            size: reportData.fileInfo.fileSize
+          },
+          status: reportData.status,
+          createdAt: reportData.createdAt,
+          updatedAt: reportData.updatedAt
+        };
+      }),
       pagination: {
         page: pageNum,
         limit: limitNum,
@@ -544,17 +551,20 @@ export const searchReports = async (req: AuthRequest, res: Response) => {
 
     return res.status(200).json(
       createSuccessResponse({
-        reports: reports.map(report => ({
-          id: report._id,
-          patientInfo: report.patientInfo,
-          fileInfo: {
-            originalName: report.fileInfo.originalName,
-            size: report.fileInfo.fileSize
-          },
-          status: report.status,
-          createdAt: report.createdAt,
-          updatedAt: report.updatedAt
-        })),
+        reports: reports.map(report => {
+          const reportData = report.toJSON ? report.toJSON() : report;
+          return {
+            id: reportData.id || reportData._id,
+            patientInfo: reportData.patientInfo,
+            fileInfo: {
+              originalName: reportData.fileInfo.originalName,
+              size: reportData.fileInfo.fileSize
+            },
+            status: reportData.status,
+            createdAt: reportData.createdAt,
+            updatedAt: reportData.updatedAt
+          };
+        }),
         pagination: {
           page: pageNum,
           limit: limitNum,
@@ -797,16 +807,17 @@ export const getSharedReport = async (req: Request, res: Response) => {
     }
 
     // Return report data (excluding sensitive user information)
+    const reportData = report.toJSON();
     return res.status(200).json(
       createSuccessResponse({
-        id: report._id,
-        patientInfo: report.patientInfo,
-        analysis: report.analysis,
+        id: reportData.id,
+        patientInfo: reportData.patientInfo,
+        analysis: reportData.analysis,
         fileInfo: {
-          originalName: report.fileInfo.originalName,
-          size: report.fileInfo.fileSize
+          originalName: reportData.fileInfo.originalName,
+          size: reportData.fileInfo.fileSize
         },
-        createdAt: report.createdAt,
+        createdAt: reportData.createdAt,
         sharedAt: new Date()
       }, 'Shared report retrieved successfully')
     );
