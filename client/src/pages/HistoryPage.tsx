@@ -138,7 +138,7 @@ const HistoryPage = () => {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked && reports) {
-      setSelectedReports(reports.map(report => report._id).filter((id): id is string => id !== undefined));
+      setSelectedReports(reports.map(report => report._id).filter((id): id is string => Boolean(id)));
     } else {
       setSelectedReports([]);
     }

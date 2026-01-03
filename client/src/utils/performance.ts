@@ -27,7 +27,7 @@ export const trackWebVitals = () => {
       const entries = list.getEntries();
       entries.forEach((entry: any) => {
         if (entry.entryType === 'first-input') {
-          console.log('FID:', entry.processingStart - entry.startTime);
+          console.log('FID:', entry.startTime - entry.startTime);
         }
       });
     });
