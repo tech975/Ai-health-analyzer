@@ -32,7 +32,7 @@ services:
       - key: CLIENT_URL
         value: https://your-frontend-app.vercel.app
       - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
-        value: false
+        value: "false"
       - key: PUPPETEER_CACHE_DIR
         value: /opt/render/.cache/puppeteer
 
