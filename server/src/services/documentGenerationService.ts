@@ -7,19 +7,144 @@ import { IReport } from '../models/Report';
 export class DocumentGenerationService {
   
   /**
-   * Generate PDF from HTML content
+   * Get Chrome executable path for different environments
+   */
+  private getChromePath(): string | undefined {
+    // Check environment variable first
+    if (process.env.CHROME_BIN) {
+      console.log(`Using CHROME_BIN environment variable: ${process.env.CHROME_BIN}`);
+      
+      // Handle glob patterns in environment variable
+      if (process.env.CHROME_BIN.includes('*')) {
+        try {
+          const glob = require('glob');
+          const matches = glob.sync(process.env.CHROME_BIN);
+          if (matches.length > 0 && fs.existsSync(matches[0])) {
+            console.log(`Resolved Chrome path: ${matches[0]}`);
+            return matches[0];
+          }
+        } catch (error) {
+          console.warn('Failed to resolve Chrome path glob pattern:', error);
+        }
+      } else if (fs.existsSync(process.env.CHROME_BIN)) {
+        return process.env.CHROME_BIN;
+      }
+    }
+
+    // Try different Chrome paths for various environments
+    const chromePaths = [
+      // Render.com and similar cloud platforms
+      '/opt/render/.cache/puppeteer/chrome/linux-*/chrome-linux*/chrome',
+      '/usr/bin/google-chrome-stable',
+      '/usr/bin/google-chrome',
+      '/usr/bin/chromium-browser',
+      '/usr/bin/chromium',
+      '/opt/google/chrome/chrome',
+      // Local development paths
+      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+      'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
+    ];
+
+    console.log('Searching for Chrome executable in known paths...');
+    for (const chromePath of chromePaths) {
+      try {
+        // Handle glob patterns for Puppeteer cache
+        if (chromePath.includes('*')) {
+          const glob = require('glob');
+          const matches = glob.sync(chromePath);
+          if (matches.length > 0 && fs.existsSync(matches[0])) {
+            console.log(`Found Chrome at: ${matches[0]}`);
+            return matches[0];
+          }
+        } else if (fs.existsSync(chromePath)) {
+          console.log(`Found Chrome at: ${chromePath}`);
+          return chromePath;
+        }
+      } catch (error) {
+        // Continue to next path
+      }
+    }
+
+    console.log('No Chrome executable found in known paths');
+    return undefined;
+  }
+
+  /**
+   * Generate PDF from HTML content with robust error handling
    */
   async generatePDF(report: IReport): Promise<Buffer> {
     const htmlContent = this.generateHTMLContent(report);
     
-    const browser = await puppeteer.launch({
+    // Configure Puppeteer for cloud deployment
+    const baseArgs = [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-accelerated-2d-canvas',
+      '--no-first-run',
+      '--no-zygote',
+      '--single-process',
+      '--disable-gpu',
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding',
+      '--disable-web-security',
+      '--disable-features=VizDisplayCompositor'
+    ];
+
+    const launchOptions: any = {
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-    });
+      args: baseArgs
+    };
+
+    // Try to find Chrome executable
+    const chromePath = this.getChromePath();
+    if (chromePath) {
+      console.log(`Using Chrome at: ${chromePath}`);
+      launchOptions.executablePath = chromePath;
+    } else {
+      console.log('No Chrome path found, using bundled Chromium');
+    }
+
+    let browser;
+    try {
+      browser = await puppeteer.launch(launchOptions);
+      console.log('Puppeteer launched successfully');
+    } catch (error) {
+      console.error('Failed to launch Puppeteer with custom Chrome path:', error);
+      
+      // Fallback 1: try without executablePath (use bundled Chromium)
+      try {
+        delete launchOptions.executablePath;
+        browser = await puppeteer.launch(launchOptions);
+        console.log('Puppeteer launched with bundled Chromium');
+      } catch (fallbackError) {
+        console.error('Failed to launch with bundled Chromium:', fallbackError);
+        
+        // Fallback 2: minimal args
+        try {
+          browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+          });
+          console.log('Puppeteer launched with minimal args');
+        } catch (minimalError) {
+          console.error('All Puppeteer launch attempts failed:', minimalError);
+          const errorMessage = minimalError instanceof Error ? minimalError.message : 'Unknown error';
+          throw new Error(`PDF generation failed: Unable to launch browser. ${errorMessage}`);
+        }
+      }
+    }
     
     try {
       const page = await browser.newPage();
-      await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+      
+      // Set a longer timeout for content loading
+      await page.setContent(htmlContent, { 
+        waitUntil: 'networkidle0',
+        timeout: 30000 
+      });
       
       const pdfBuffer = await page.pdf({
         format: 'A4',
@@ -31,12 +156,20 @@ export class DocumentGenerationService {
           left: '10mm'
         },
         preferCSSPageSize: true,
-        displayHeaderFooter: false
+        displayHeaderFooter: false,
+        timeout: 30000
       });
       
+      console.log('PDF generated successfully');
       return Buffer.from(pdfBuffer);
+    } catch (pdfError) {
+      console.error('PDF generation error:', pdfError);
+      const errorMessage = pdfError instanceof Error ? pdfError.message : 'Unknown error';
+      throw new Error(`PDF generation failed: ${errorMessage}`);
     } finally {
-      await browser.close();
+      if (browser) {
+        await browser.close();
+      }
     }
   }
 

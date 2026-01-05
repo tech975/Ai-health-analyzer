@@ -681,6 +681,23 @@ export const downloadReport = async (req: AuthRequest, res: Response) => {
       
       // Check if it's a specific error type
       if (generationError instanceof Error) {
+        console.error('Generation error details:', {
+          message: generationError.message,
+          stack: generationError.stack,
+          name: generationError.name
+        });
+        
+        // Chrome/Puppeteer specific errors
+        if (generationError.message.includes('Chrome') || 
+            generationError.message.includes('puppeteer') ||
+            generationError.message.includes('browser') ||
+            generationError.message.includes('launch') ||
+            generationError.message.includes('executable')) {
+          return res.status(503).json(
+            createErrorResponse('SERVICE_UNAVAILABLE', 'PDF generation service is temporarily unavailable. Please try downloading as Word format or try again later.')
+          );
+        }
+        
         if (generationError.message.includes('timeout')) {
           return res.status(408).json(
             createErrorResponse('GENERATION_TIMEOUT', 'Document generation took too long. Please try again.')

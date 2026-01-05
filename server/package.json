@@ -7,9 +7,10 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "postbuild": "cp -r src/public dist/ 2>/dev/null || true",
+    "postbuild": "if exist src\\public xcopy /E /I src\\public dist\\public",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "postinstall": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "@google/generative-ai": "^0.2.1",
@@ -27,7 +28,8 @@
     "multer": "^1.4.5-lts.1",
     "pdf-parse": "^1.1.1",
     "puppeteer": "^24.34.0",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "glob": "^10.3.10"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

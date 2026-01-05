@@ -13,6 +13,7 @@ import { cacheService } from './services/cacheService';
 import authRoutes from './routes/authRoutes';
 import reportRoutes from './routes/reportRoutes';
 import fileRoutes from './routes/fileRoutes';
+import healthRoutes from './routes/healthRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -103,6 +104,7 @@ app.use('/api', generalRateLimit.middleware);
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/files', fileRoutes);
+app.use('/api', healthRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

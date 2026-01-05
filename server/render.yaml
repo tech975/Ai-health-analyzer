@@ -3,7 +3,10 @@ services:
     name: ai-health-analyzer-api
     env: node
     plan: starter
-    buildCommand: npm ci && npm run build
+    buildCommand: |
+      npm ci
+      npx puppeteer browsers install chrome
+      npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -28,6 +31,10 @@ services:
         sync: false
       - key: CLIENT_URL
         value: https://your-frontend-app.vercel.app
+      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
+        value: false
+      - key: PUPPETEER_CACHE_DIR
+        value: /opt/render/.cache/puppeteer
 
 databases:
   - name: ai-health-analyzer-db
