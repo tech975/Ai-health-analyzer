@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ApiResponse, LoginCredentials, RegisterCredentials, AuthResponse, User, PatientFormData, Report, PaginatedResponse } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = 'https://ai-health-analyzer.onrender.com';
 
 // Simple in-memory cache for API responses
 class ApiCache {

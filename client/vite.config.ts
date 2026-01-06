@@ -1,13 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": new URL('./src', import.meta.url).pathname,
     },
   },
   server: {
@@ -48,10 +47,5 @@ export default defineConfig({
   // Enable performance optimizations
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', 'axios']
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
   },
 })

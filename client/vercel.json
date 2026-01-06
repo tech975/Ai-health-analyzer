@@ -20,13 +20,5 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "env": {
-    "VITE_API_URL": ""
-  },
-  "build": {
-    "env": {
-      "VITE_API_URL": ""
-    }
-  }
+  ]
 }
