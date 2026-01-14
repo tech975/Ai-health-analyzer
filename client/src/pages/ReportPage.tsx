@@ -19,7 +19,6 @@ const ReportPage = () => {
 
   const {
     downloadReport,
-    isDownloading,
     downloadingFormat,
     error: actionError,
     clearError,
@@ -173,7 +172,6 @@ const ReportPage = () => {
         <ReportViewer
           report={report!}
           onDownload={handleDownload}
-          isDownloading={isDownloading}
           downloadingFormat={downloadingFormat}
         />
       </div>

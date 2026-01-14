@@ -5,14 +5,12 @@ import { cn } from '../utils/cn';
 interface ReportViewerProps {
   report: Report;
   onDownload?: (format: 'pdf' | 'word') => void;
-  isDownloading?: boolean;
   downloadingFormat?: 'pdf' | 'word' | null;
 }
 
 const ReportViewer: React.FC<ReportViewerProps> = ({
   report,
   onDownload,
-  isDownloading = false,
   downloadingFormat = null,
 }) => {
   const { analysis, createdAt } = report;
