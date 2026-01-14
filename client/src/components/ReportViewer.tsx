@@ -6,12 +6,14 @@ interface ReportViewerProps {
   report: Report;
   onDownload?: (format: 'pdf' | 'word') => void;
   isDownloading?: boolean;
+  downloadingFormat?: 'pdf' | 'word' | null;
 }
 
 const ReportViewer: React.FC<ReportViewerProps> = ({
   report,
   onDownload,
   isDownloading = false,
+  downloadingFormat = null,
 }) => {
   const { analysis, createdAt } = report;
 
@@ -31,25 +33,25 @@ const ReportViewer: React.FC<ReportViewerProps> = ({
           <>
             <button
               onClick={() => onDownload('pdf')}
-              disabled={isDownloading}
+              disabled={downloadingFormat === 'pdf'}
               className={cn(
                 "px-4 py-2 text-sm font-medium rounded-md border transition-colors",
                 "border-gray-300 text-gray-700 bg-white hover:bg-gray-50",
                 "disabled:opacity-50 disabled:cursor-not-allowed"
               )}
             >
-              {isDownloading ? 'Downloading...' : 'Download PDF'}
+              {downloadingFormat === 'pdf' ? 'Downloading...' : 'Download PDF'}
             </button>
             <button
               onClick={() => onDownload('word')}
-              disabled={isDownloading}
+              disabled={downloadingFormat === 'word'}
               className={cn(
                 "px-4 py-2 text-sm font-medium rounded-md border transition-colors",
                 "border-gray-300 text-gray-700 bg-white hover:bg-gray-50",
                 "disabled:opacity-50 disabled:cursor-not-allowed"
               )}
             >
-              {isDownloading ? 'Downloading...' : 'Download Word'}
+              {downloadingFormat === 'word' ? 'Downloading...' : 'Download Word'}
             </button>
           </>
         )}

@@ -50,7 +50,6 @@ export interface PatientInfo {
   name: string;
   age: number;
   gender: 'male' | 'female' | 'other';
-  phoneNumber: string;
 }
 
 // AI Analysis types

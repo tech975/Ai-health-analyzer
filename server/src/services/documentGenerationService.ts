@@ -180,8 +180,7 @@ export class DocumentGenerationService {
     const patientDetails = report.analysis.patientDetails || {
       name: report.patientInfo.name,
       age: report.patientInfo.age.toString(),
-      gender: report.patientInfo.gender,
-      phoneNumber: report.patientInfo.phoneNumber
+      gender: report.patientInfo.gender
     };
 
     const formatDate = (dateString: string) => {
@@ -442,8 +441,7 @@ export class DocumentGenerationService {
     const patientDetails = report.analysis.patientDetails || {
       name: report.patientInfo.name,
       age: report.patientInfo.age.toString(),
-      gender: report.patientInfo.gender,
-      phoneNumber: report.patientInfo.phoneNumber
+      gender: report.patientInfo.gender
     };
 
     const formatDate = (dateString: string) => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Report } from '../types';
 import { formatDistanceToNow } from 'date-fns';
-import { EyeIcon, TrashIcon, UserIcon, PhoneIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, TrashIcon, UserIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { getReportId } from '../utils/reportUtils';
 
 interface ReportListProps {
@@ -72,9 +72,6 @@ const ReportList: React.FC<ReportListProps> = ({
                 Patient Name
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Phone Number
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Age
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -109,9 +106,6 @@ const ReportList: React.FC<ReportListProps> = ({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {report.patientInfo.name}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {report.patientInfo.phoneNumber}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {report.patientInfo.age}
@@ -222,10 +216,6 @@ const ReportList: React.FC<ReportListProps> = ({
 
                   {/* Details */}
                   <div className="space-y-1 mb-3">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <PhoneIcon className="h-4 w-4 text-gray-400 mr-2" aria-hidden="true" />
-                      <span>{report.patientInfo.phoneNumber}</span>
-                    </div>
                     <div className="flex items-center justify-between text-sm text-gray-600">
                       <div className="flex items-center">
                         <CalendarIcon className="h-4 w-4 text-gray-400 mr-2" aria-hidden="true" />

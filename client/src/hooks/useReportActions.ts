@@ -11,14 +11,14 @@ interface ShareResult {
 }
 
 export const useReportActions = ({ reportId }: UseReportActionsProps) => {
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadingFormat, setDownloadingFormat] = useState<'pdf' | 'word' | null>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [shareResult, setShareResult] = useState<ShareResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const downloadReport = async (format: 'pdf' | 'word') => {
     try {
-      setIsDownloading(true);
+      setDownloadingFormat(format);
       setError(null);
 
       const blob = await reportApi.downloadReport(reportId, format);
@@ -45,7 +45,7 @@ export const useReportActions = ({ reportId }: UseReportActionsProps) => {
       console.error('Download failed:', err);
       setError(`Failed to download ${format.toUpperCase()} report. Please try again.`);
     } finally {
-      setIsDownloading(false);
+      setDownloadingFormat(null);
     }
   };
 
@@ -77,7 +77,8 @@ export const useReportActions = ({ reportId }: UseReportActionsProps) => {
   return {
     downloadReport,
     shareReport,
-    isDownloading,
+    isDownloading: downloadingFormat !== null,
+    downloadingFormat,
     isSharing,
     shareResult,
     error,

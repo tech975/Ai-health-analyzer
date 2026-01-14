@@ -20,6 +20,7 @@ const ReportPage = () => {
   const {
     downloadReport,
     isDownloading,
+    downloadingFormat,
     error: actionError,
     clearError,
   } = useReportActions({ reportId: id || '' });
@@ -173,6 +174,7 @@ const ReportPage = () => {
           report={report!}
           onDownload={handleDownload}
           isDownloading={isDownloading}
+          downloadingFormat={downloadingFormat}
         />
       </div>
     </div>

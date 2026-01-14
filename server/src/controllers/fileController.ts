@@ -6,6 +6,7 @@ import {
   validateFile,
   getFileInfo 
 } from '../services/fileUploadService';
+import patientInfoExtractionService from '../services/patientInfoExtractionService';
 import { AuthRequest } from '../types';
 
 // Upload file endpoint
@@ -220,6 +221,120 @@ export const deleteFile = async (req: AuthRequest, res: Response): Promise<void>
     });
   }
 };
+
+// Extract patient info from uploaded PDF
+export const extractPatientInfo = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        error: {
+          code: 'UNAUTHORIZED',
+          message: 'Authentication required',
+        },
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const { fileId } = req.body;
+
+    if (!fileId) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 'MISSING_FILE_ID',
+          message: 'File ID is required',
+        },
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    // Find the file record
+    const fileRecord = await FileRecord.findOne({
+      _id: fileId,
+      userId: req.user.id,
+    });
+
+    if (!fileRecord) {
+      res.status(404).json({
+        success: false,
+        error: {
+          code: 'FILE_NOT_FOUND',
+          message: 'File not found',
+        },
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    // Download file from Cloudinary
+    const fileBuffer = await downloadFileFromCloudinary(fileRecord.cloudinaryUrl);
+
+    // Extract patient info from PDF
+    const extractedInfo = await patientInfoExtractionService.extractPatientInfoFromPDF(fileBuffer);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        fileId: fileRecord._id,
+        extractedPatientInfo: extractedInfo,
+        fileName: fileRecord.originalName,
+      },
+      timestamp: new Date().toISOString(),
+    });
+
+  } catch (error) {
+    console.error('Extract patient info error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'EXTRACTION_FAILED',
+        message: error instanceof Error ? error.message : 'Failed to extract patient information',
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+// Helper function to download file from Cloudinary
+async function downloadFileFromCloudinary(url: string): Promise<Buffer> {
+  try {
+    const rawUrl = url.replace('/image/upload/', '/raw/upload/');
+    
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('File download timeout')), 30000);
+    });
+    
+    const downloadPromise = fetch(rawUrl, {
+      headers: { 'User-Agent': 'AI-Health-Analyzer/1.0' }
+    });
+    
+    const response = await Promise.race([downloadPromise, timeoutPromise]);
+    
+    if (response.ok) {
+      const arrayBuffer = await response.arrayBuffer();
+      return Buffer.from(arrayBuffer);
+    }
+    
+    const originalDownloadPromise = fetch(url, {
+      headers: { 'User-Agent': 'AI-Health-Analyzer/1.0' }
+    });
+    
+    const originalResponse = await Promise.race([originalDownloadPromise, timeoutPromise]);
+    
+    if (originalResponse.ok) {
+      const arrayBuffer = await originalResponse.arrayBuffer();
+      return Buffer.from(arrayBuffer);
+    }
+    
+    throw new Error('Failed to download file from Cloudinary');
+  } catch (error) {
+    console.error('Download error:', error);
+    throw error;
+  }
+}
 
 // Get user's files endpoint
 export const getUserFiles = async (req: AuthRequest, res: Response): Promise<void> => {

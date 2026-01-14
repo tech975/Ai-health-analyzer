@@ -56,12 +56,6 @@ const patientInfoSchema = new Schema<PatientInfo>({
     type: String,
     required: [true, 'Patient gender is required'],
     enum: ['male', 'female', 'other']
-  },
-  phoneNumber: {
-    type: String,
-    required: [true, 'Phone number is required'],
-    trim: true,
-    match: [/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number']
   }
 }, { _id: false });
 

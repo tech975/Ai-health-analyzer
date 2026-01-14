@@ -18,7 +18,6 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit, isLoading = false }
     name: '',
     age: 0,
     gender: 'male',
-    phoneNumber: '',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -48,15 +47,6 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit, isLoading = false }
       case 'gender':
         if (!value || !['male', 'female', 'other'].includes(value)) {
           return 'Please select a valid gender';
-        }
-        break;
-      
-      case 'phoneNumber':
-        if (!value || value.trim().length < 10) {
-          return 'Phone number must be at least 10 digits';
-        }
-        if (!/^[\d\s\-\+\(\)]+$/.test(value.trim())) {
-          return 'Phone number can only contain digits, spaces, and common symbols';
         }
         break;
       
@@ -118,7 +108,6 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit, isLoading = false }
       name: true,
       age: true,
       gender: true,
-      phoneNumber: true,
     });
 
     return isValid;
@@ -216,32 +205,6 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit, isLoading = false }
           </select>
           {errors.gender && touched.gender && (
             <p id="gender-error" className="mt-1 text-sm text-red-600" role="alert">{errors.gender}</p>
-          )}
-        </div>
-
-        {/* Phone Number */}
-        <div className="sm:col-span-2 md:col-span-1">
-          <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
-            Phone Number *
-          </label>
-          <input
-            type="tel"
-            id="phoneNumber"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleInputChange}
-            onBlur={handleBlur}
-            disabled={isLoading}
-            required
-            aria-invalid={errors.phoneNumber && touched.phoneNumber ? 'true' : 'false'}
-            aria-describedby={errors.phoneNumber && touched.phoneNumber ? 'phoneNumber-error' : undefined}
-            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-              errors.phoneNumber && touched.phoneNumber ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Enter phone number"
-          />
-          {errors.phoneNumber && touched.phoneNumber && (
-            <p id="phoneNumber-error" className="mt-1 text-sm text-red-600" role="alert">{errors.phoneNumber}</p>
           )}
         </div>
       </fieldset>

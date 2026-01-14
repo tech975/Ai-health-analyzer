@@ -6,6 +6,7 @@ import {
   getFile,
   deleteFile,
   getUserFiles,
+  extractPatientInfo,
 } from '../controllers/fileController';
 
 const router = express.Router();
@@ -24,6 +25,9 @@ router.use(authenticate);
 
 // POST /api/files/upload - Upload a file - Extended timeout for large files
 router.post('/upload', extendTimeout(300000), upload.single('file'), uploadFile); // 5 minutes
+
+// POST /api/files/extract-patient-info - Extract patient info from PDF
+router.post('/extract-patient-info', extendTimeout(60000), extractPatientInfo); // 1 minute
 
 // GET /api/files - Get user's files with pagination
 router.get('/', getUserFiles);

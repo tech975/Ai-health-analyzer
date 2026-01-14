@@ -41,8 +41,7 @@ export const uploadReport = async (req: AuthRequest, res: Response) => {
       patientInfo: Joi.object({
         name: Joi.string().trim().max(100).required(),
         age: Joi.number().integer().min(0).max(150).required(),
-        gender: Joi.string().valid('male', 'female', 'other').required(),
-        phoneNumber: Joi.string().pattern(/^[\+]?[1-9][\d]{0,15}$/).required()
+        gender: Joi.string().valid('male', 'female', 'other').required()
       }).required(),
       fileId: Joi.string().required()
     }).validate(req.body);
@@ -108,8 +107,7 @@ export const analyzeReport = async (req: AuthRequest, res: Response) => {
       patientInfo: Joi.object({
         name: Joi.string().trim().max(100).required(),
         age: Joi.number().integer().min(0).max(150).required(),
-        gender: Joi.string().valid('male', 'female', 'other').required(),
-        phoneNumber: Joi.string().pattern(/^[\+]?[1-9][\d]{0,15}$/).required()
+        gender: Joi.string().valid('male', 'female', 'other').required()
       }).required()
     });
 
